@@ -111,7 +111,14 @@ type BalanceQuantity = {
   numeric: string
 }
 
-export type SIWEStatus = 'uninitialized' | 'ready' | 'loading' | 'success' | 'rejected' | 'error'
+export type SIWEStatus =
+  | 'uninitialized'
+  | 'ready'
+  | 'loading'
+  | 'success'
+  | 'rejected'
+  | 'error'
+  | 'authenticating'
 
 export type SdkFramework = 'html' | 'react' | 'vue'
 

@@ -1,15 +1,15 @@
-import { proxy, ref } from 'valtio/vanilla'
-import { EventsController } from './EventsController.js'
-import { ModalController } from './ModalController.js'
-import { CoreHelperUtil } from '../utils/CoreHelperUtil.js'
 import {
   NetworkUtil,
   type CaipNetwork,
   type CaipNetworkId,
   type ChainNamespace
 } from '@reown/appkit-common'
-import { ChainController } from './ChainController.js'
+import { proxy, ref } from 'valtio/vanilla'
 import { ConstantsUtil } from '../utils/ConstantsUtil.js'
+import { CoreHelperUtil } from '../utils/CoreHelperUtil.js'
+import { ChainController } from './ChainController.js'
+import { EventsController } from './EventsController.js'
+import { ModalController } from './ModalController.js'
 
 // -- Types --------------------------------------------- //
 export interface NetworkControllerClient {

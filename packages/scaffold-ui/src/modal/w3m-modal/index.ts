@@ -1,4 +1,10 @@
 import {
+  ConstantsUtil,
+  type CaipAddress,
+  type CaipNetwork,
+  type SIWEStatus
+} from '@reown/appkit-common'
+import {
   AccountController,
   ApiController,
   ChainController,
@@ -14,12 +20,6 @@ import { UiHelperUtil, customElement, initializeTheming } from '@reown/appkit-ui
 import { LitElement, html } from 'lit'
 import { state } from 'lit/decorators.js'
 import styles from './styles.js'
-import {
-  ConstantsUtil,
-  type CaipAddress,
-  type CaipNetwork,
-  type SIWEStatus
-} from '@reown/appkit-common'
 
 // -- Helpers --------------------------------------------- //
 const SCROLL_LOCK = 'scroll-lock'
@@ -36,11 +36,13 @@ export class W3mModal extends LitElement {
   // -- State & Properties -------------------------------- //
   @state() private open = ModalController.state.open
 
+  @state() private isSiweEnabled = OptionsController.state.isSiweEnabled
+
+  @state() private is1ClickAuthenticating = AccountController.state.is1ClickAuthenticating
+
   @state() private caipAddress = ChainController.state.activeCaipAddress
 
   @state() private caipNetwork = ChainController.state.activeCaipNetwork
-
-  @state() private isSiweEnabled = OptionsController.state.isSiweEnabled
 
   @state() private shake = ModalController.state.shake
 
@@ -52,6 +54,9 @@ export class W3mModal extends LitElement {
       ...[
         ModalController.subscribeKey('open', val => (val ? this.onOpen() : this.onClose())),
         ModalController.subscribeKey('shake', val => (this.shake = val)),
+        AccountController.subscribeKey('is1ClickAuthenticating', val => {
+          this.is1ClickAuthenticating = val
+        }),
         AccountController.subscribeKey('siweStatus', val => this.onSiweStatusChange(val), 'eip155'),
         ChainController.subscribeKey('activeCaipNetwork', val => this.onNewNetwork(val)),
         ChainController.subscribeKey('activeCaipAddress', val => this.onNewAddress(val)),
@@ -189,19 +194,28 @@ export class W3mModal extends LitElement {
   }
 
   private async onNewAddress(caipAddress?: CaipAddress) {
-    const prevConnected = this.caipAddress
+    const prevConnectedAddress = this.caipAddress
       ? CoreHelperUtil.getPlainAddress(this.caipAddress)
       : undefined
     const nextConnected = caipAddress ? CoreHelperUtil.getPlainAddress(caipAddress) : undefined
-    const isSameAddress = prevConnected === nextConnected
+    const isSameAddress = prevConnectedAddress === nextConnected
 
-    if (nextConnected && !isSameAddress && this.isSiweEnabled) {
-      const { SIWEController } = await import('@reown/appkit-siwe')
+    if (nextConnected && !isSameAddress && this.isSiweEnabled && !this.is1ClickAuthenticating) {
+      const { SIWEController, appKitAuthConfig } = await import('@reown/appkit-siwe')
+      if (!SIWEController.state._client && OptionsController.state.enableAuth) {
+        SIWEController.setSIWEClient(appKitAuthConfig)
+      }
+
       const signed = AccountController.state.siweStatus === 'success'
 
-      if (!prevConnected && nextConnected) {
+      if (!prevConnectedAddress && nextConnected) {
         this.onSiweNavigation()
-      } else if (signed && prevConnected && nextConnected && prevConnected !== nextConnected) {
+      } else if (
+        signed &&
+        prevConnectedAddress &&
+        nextConnected &&
+        prevConnectedAddress !== nextConnected
+      ) {
         if (SIWEController.state._client?.options.signOutOnAccountChange) {
           await SIWEController.signOut()
           this.onSiweNavigation()

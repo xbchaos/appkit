@@ -1,6 +1,9 @@
 /* eslint-disable max-depth */
+import type { AdapterType, CaipAddress, CaipNetwork, ChainNamespace } from '@reown/appkit-common'
+import { SafeLocalStorage, SafeLocalStorageKeys } from '@reown/appkit-common'
 import {
   AccountController,
+  AlertController,
   ChainController,
   ConnectionController,
   CoreHelperUtil,
@@ -8,18 +11,15 @@ import {
   StorageUtil,
   type ConnectionControllerClient,
   type Connector,
-  type NetworkControllerClient,
-  AlertController
+  type NetworkControllerClient
 } from '@reown/appkit-core'
 import { ConstantsUtil, ErrorUtil, LoggerUtil, PresetsUtil } from '@reown/appkit-utils'
-import UniversalProvider from '@walletconnect/universal-provider'
-import type { UniversalProviderOpts } from '@walletconnect/universal-provider'
-import { WcHelpersUtil } from '../utils/HelpersUtil.js'
-import type { AppKit } from '../client.js'
 import type { SessionTypes } from '@walletconnect/types'
-import type { CaipNetwork, CaipAddress, ChainNamespace, AdapterType } from '@reown/appkit-common'
-import { SafeLocalStorage, SafeLocalStorageKeys } from '@reown/appkit-common'
+import type { UniversalProviderOpts } from '@walletconnect/universal-provider'
+import UniversalProvider from '@walletconnect/universal-provider'
+import type { AppKit } from '../client.js'
 import { ProviderUtil } from '../store/index.js'
+import { WcHelpersUtil } from '../utils/HelpersUtil.js'
 import type { AppKitOptions } from '../utils/TypesUtil.js'
 
 type Metadata = {
@@ -162,10 +162,6 @@ export class UniversalAdapterClient {
             const chains = this.caipNetworks
               ?.filter(network => network.chainNamespace === 'eip155')
               .map(chain => chain.id) as string[]
-
-            siweParams.chains = this.caipNetworks
-              ?.filter(network => network.chainNamespace === 'eip155')
-              .map(chain => chain.chainId) as number[]
 
             const result = await WalletConnectProvider.authenticate({
               nonce: await siweConfig?.getNonce?.(),
@@ -389,7 +385,7 @@ export class UniversalAdapterClient {
     if (nameSpaces) {
       const reversedChainNamespaces = Object.keys(nameSpaces).reverse() as ChainNamespace[]
       reversedChainNamespaces.forEach(chainNamespace => {
-        const caipAddress = nameSpaces?.[chainNamespace]?.accounts[0] as CaipAddress | undefined
+        const caipAddress = nameSpaces?.[chainNamespace]?.accounts[0] as CaipAddress
 
         ProviderUtil.setProvider(chainNamespace, this.walletConnectProvider)
         ProviderUtil.setProviderId(chainNamespace, 'walletConnect')
