@@ -1,5 +1,34 @@
 # @reown/appkit-ui
 
+## 1.0.6
+
+### Patch Changes
+
+- e6a36a7: Introducing debug mode. This is useful for seeing UI alerts while debugging.
+
+  **Example usage**
+
+  ```ts
+  import { createAppKit } from '@reown/appkit/react'
+  import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+  import { mainnet } from '@reown/appkit/networks'
+
+  const wagmiAdapter = new WagmiAdapter({
+    ssr: true,
+    networks: [mainnet],
+    projectId: 'YOUR_PROJECT_ID'
+  })
+
+  const modal = createAppKit({
+    adapters: [wagmiAdapter],
+    networks: [mainnet],
+    projectId: 'YOUR_PROJECT_ID',
+    debug: true // Optional - defaults to false
+  })
+  ```
+
+- a87ea33: AppKit Auth
+
 ## 1.0.5
 
 ### Patch Changes
