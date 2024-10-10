@@ -1,5 +1,5 @@
 {
-  "name": "@web3modal/wagmi",
+  "name": "@hahamage/web3modal-wagmi",
   "version": "5.1.11",
   "type": "module",
   "main": "./dist/esm/exports/index.js",
@@ -52,8 +52,8 @@
     "test": "vitest run --dir tests"
   },
   "dependencies": {
-    "@walletconnect/ethereum-provider": "2.16.1",
-    "@walletconnect/utils": "2.16.1",
+    "@walletconnect/ethereum-provider": "2.16.3",
+    "@walletconnect/utils": "2.16.3",
     "@web3modal/polyfills": "workspace:*",
     "@web3modal/base": "workspace:*",
     "@web3modal/wallet": "workspace:*",
